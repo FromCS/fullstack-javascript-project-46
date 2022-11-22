@@ -26,6 +26,12 @@ jobs:
         with:
           hexlet-id: ${{ secrets.HEXLET_ID }}
       - run: make install
-      - run: make test
-      - run: make test-coverage
       - run: make lint
+      - run: make test
+      - name: Test & publish test coverage
+        uses: paambaati/code-climate-action@v3.0.0
+        env:
+          CODE_CLIMATE_KEY: ${{ secrets.CODE_CLIMATE_KEY }}
+        with:
+          coverageCommand: make test-coverage
+          debug: true
