@@ -8,6 +8,10 @@ const __dirname = dirname(__filename);
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8');
 
-test('gendiff', () => {
+test('gendiff JSON', () => {
   expect(genDiff('./__fixtures__/file1.json', './__fixtures__/file2.json')).toBe(readFile('expected_file.txt'));
+});
+
+test('gendiff YAML', () => {
+  expect(genDiff('./__fixtures__/file3.yml', './__fixtures__/file4.yaml')).toBe(readFile('expected_file2.txt'));
 });
