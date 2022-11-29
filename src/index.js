@@ -1,13 +1,6 @@
 import _ from 'lodash';
 import path from 'path';
-import { readFileSync } from 'fs';
-
-const getAbsolutePath = (filepath) => path.resolve(process.cwd(), filepath);
-
-const readFile = (filepath) => {
-  const absolutePath = getAbsolutePath(filepath);
-  return JSON.parse(readFileSync(absolutePath));
-};
+import readFile from './parsers.js';
 
 const stringify = (obj, replacer = ' ', spaceCount = 2) => {
   const entries = Object.entries(obj);
@@ -15,8 +8,12 @@ const stringify = (obj, replacer = ' ', spaceCount = 2) => {
   return `{\n${string.join('\n')}\n}`;
 };
 
+const getExtension = (filepath) => path.extname(filepath);
+
+const getSortedKeysByName = (data1, data2) => _.sortBy(Object.keys({ ...data1, ...data2 }));
+
 const getDiff = (data1, data2) => {
-  const sortedGeneralKeys = _.sortBy(Object.keys({ ...data1, ...data2 }));
+  const sortedGeneralKeys = getSortedKeysByName(data1, data2);
   const difference = sortedGeneralKeys.reduce((acc, key) => {
     if (!_.has(data1, key)) {
       acc[`+ ${key}`] = data2[key];
@@ -41,8 +38,8 @@ const getDiff = (data1, data2) => {
 };
 
 const genDiff = (filepath1, filepath2) => {
-  const data1 = readFile(filepath1);
-  const data2 = readFile(filepath2);
+  const data1 = readFile(filepath1, getExtension(filepath1));
+  const data2 = readFile(filepath2, getExtension(filepath2));
   const difference = getDiff(data1, data2);
   console.log(stringify(difference));
   return stringify(difference);
