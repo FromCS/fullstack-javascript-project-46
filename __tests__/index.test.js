@@ -13,5 +13,5 @@ test('gendiff JSON', () => {
 });
 
 test('gendiff YAML', () => {
-  expect(genDiff('./__fixtures__/file3.yml', './__fixtures__/file4.yaml')).toBe(readFile('expected_file2.txt'));
+  expect(genDiff('./__fixtures__/file1.yml', './__fixtures__/file2.yaml')).toBe(readFile('expected_file2.txt'));
 });
