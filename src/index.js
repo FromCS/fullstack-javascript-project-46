@@ -2,10 +2,24 @@ import _ from 'lodash';
 import path from 'path';
 import readFile from './parsers.js';
 
-const stringify = (obj, replacer = ' ', spaceCount = 2) => {
-  const entries = Object.entries(obj);
-  const string = entries.map(([key, value]) => `${replacer.repeat(spaceCount)}${key}: ${value}`);
-  return `{\n${string.join('\n')}\n}`;
+const stringify = (obj, replacer = ' ', spaceCount = 4) => {
+  const iter = (currentValue, depth) => {
+    if (!_.isObject(currentValue)) {
+      return `${currentValue}`;
+    }
+    const keys = Object.entries(currentValue);
+    const newSpaceCount = spaceCount * depth;
+    const result = keys.map(([key, value]) => {
+      if (key.startsWith('+') || key.startsWith('-')) {
+        return `${replacer.repeat(newSpaceCount - 2)}${key}: ${iter(value, depth + 1)}`;
+      }
+      return `${replacer.repeat(newSpaceCount)}${key}: ${iter(value, depth + 1)}`;
+    });
+    const bracketSpaceCount = newSpaceCount - spaceCount;
+    return `{\n${result.join('\n')}\n${replacer.repeat(bracketSpaceCount)}}`;
+  };
+
+  return iter(obj, 1);
 };
 
 const getExtension = (filepath) => path.extname(filepath);
