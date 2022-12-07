@@ -10,13 +10,13 @@ const stringify = (obj, replacer = ' ', spaceCount = 4) => {
     const keys = Object.entries(currentValue);
     const newSpaceCount = spaceCount * depth;
     const result = keys.map(([key, value]) => {
-      if (key.startsWith('+') || key.startsWith('-')) {
-        return `${replacer.repeat(newSpaceCount - 2)}${key}: ${iter(value, depth + 1)}`;
-      }
-      return `${replacer.repeat(newSpaceCount)}${key}: ${iter(value, depth + 1)}`;
+      const indent = key.startsWith('+') || key.startsWith('-')
+        ? replacer.repeat(newSpaceCount - 2)
+        : replacer.repeat(newSpaceCount);
+      return `${indent}${key}: ${iter(value, depth + 1)}`;
     });
-    const bracketSpaceCount = newSpaceCount - spaceCount;
-    return `{\n${result.join('\n')}\n${replacer.repeat(bracketSpaceCount)}}`;
+    const bracketIndent = newSpaceCount - spaceCount;
+    return `{\n${result.join('\n')}\n${replacer.repeat(bracketIndent)}}`;
   };
 
   return iter(obj, 1);
