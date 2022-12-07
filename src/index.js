@@ -61,12 +61,12 @@ const getDiff = (data1, data2) => {
   return difference;
 };
 
-const genDiff = (filepath1, filepath2) => {
+const genDiff = (filepath1, filepath2, format = 'stylish') => {
   const data1 = readFile(filepath1, getExtension(filepath1));
   const data2 = readFile(filepath2, getExtension(filepath2));
   const difference = getDiff(data1, data2);
-  console.log(stringify(difference));
-  return stringify(difference);
+  console.log(stringify(difference, format));
+  return stringify(difference, format);
 };
 
 export default genDiff;
