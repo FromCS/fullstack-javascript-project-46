@@ -2,7 +2,7 @@ import _ from 'lodash';
 import path from 'path';
 import readFile from './parsers.js';
 
-const stringify = (obj, replacer = ' ', spaceCount = 4) => {
+const stringify = (obj, format = 'stylish', replacer = ' ', spaceCount = 4) => {
   const iter = (currentValue, depth) => {
     if (!_.isObject(currentValue)) {
       return `${currentValue}`;
@@ -10,13 +10,15 @@ const stringify = (obj, replacer = ' ', spaceCount = 4) => {
     const keys = Object.entries(currentValue);
     const newSpaceCount = spaceCount * depth;
     const result = keys.map(([key, value]) => {
-      const indent = key.startsWith('+') || key.startsWith('-')
+      if (format === 'stylish') {
+        const indent = key.startsWith('+') || key.startsWith('-')
         ? replacer.repeat(newSpaceCount - 2)
         : replacer.repeat(newSpaceCount);
-      return `${indent}${key}: ${iter(value, depth + 1)}`;
+        return `${indent}${key}: ${iter(value, depth + 1)}`;
+      }
     });
-    const bracketIndent = newSpaceCount - spaceCount;
-    return `{\n${result.join('\n')}\n${replacer.repeat(bracketIndent)}}`;
+    const bracketIndent = replacer.repeat(newSpaceCount - spaceCount);
+    return `{\n${result.join('\n')}\n${bracketIndent}}`;
   };
 
   return iter(obj, 1);
