@@ -32,26 +32,28 @@ const getDiff = (data1, data2) => {
     const value1 = data1[key];
     const value2 = data2[key];
     if (_.isObject(value1) && _.isObject(value2)) {
-      acc[`${key}`] = getDiff(value1, value2);
+      acc[key] = getDiff(value1, value2);
       return acc;
     }
 
     if (!_.has(data1, key)) {
       acc[`+ ${key}`] = value2;
-      return acc;
     }
 
     if (!_.has(data2, key)) {
       acc[`- ${key}`] = value1;
-      return acc;
     }
 
-    if (value1 === value2) {
-      acc[`${key}`] = value2;
-      return acc;
+    if (_.has(data1, key) && _.has(data2, key)) {
+      if (value1 === value2) {
+        acc[key] = value2;
+      }
+      if (value1 !== value2) { // условие неверное, нужен рефакторинг
+        acc[`- ${key}`] = value1;
+        acc[`+ ${key}`] = value2;
+      }
     }
-    acc[`- ${key}`] = value1;
-    acc[`+ ${key}`] = value2;
+
     return acc;
   }, {});
   return difference;
