@@ -1,27 +1,11 @@
 import _ from 'lodash';
 import path from 'path';
 import readFile from './parsers.js';
+import chooseFormatters from './formatters/index.js';
 
-const stringify = (obj, format = 'stylish', replacer = ' ', spaceCount = 4) => {
-  const iter = (currentValue, depth) => {
-    if (!_.isObject(currentValue)) {
-      return `${currentValue}`;
-    }
-    const keys = Object.entries(currentValue);
-    const newSpaceCount = spaceCount * depth;
-    const result = keys.map(([key, value]) => {
-      if (format === 'stylish') {
-        const indent = key.startsWith('+') || key.startsWith('-')
-        ? replacer.repeat(newSpaceCount - 2)
-        : replacer.repeat(newSpaceCount);
-        return `${indent}${key}: ${iter(value, depth + 1)}`;
-      }
-    });
-    const bracketIndent = replacer.repeat(newSpaceCount - spaceCount);
-    return `{\n${result.join('\n')}\n${bracketIndent}}`;
-  };
-
-  return iter(obj, 1);
+const stringify = (obj, formatter = 'stylish') => {
+  const makeFormatter = chooseFormatters(formatter);
+  return makeFormatter(obj);
 };
 
 const getExtension = (filepath) => path.extname(filepath);
