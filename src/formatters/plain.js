@@ -33,7 +33,6 @@ const makePlain = (obj) => {
         console.log(acc);
         return getStringOfPlainFormatter(key, value, newKey);
       }
-      return '';
     });
 
     return _.compact(plain).join('\n');
