@@ -7,12 +7,27 @@ const makeQuotes = (value) => ((typeof value === 'boolean' || value === null) ? 
 // const getStringOfPlainFormatter = (currentKey, value, newKey) => {
 // if ()
 // };
+const defineComplexValue = (value) => (_.isObject(value) ? '[complex value]' : makeQuotes(value));
+
 const getStringOfPlainFormatter = (currentKey, value, newKey) => {
-  if (currentKey.startsWith('-')) {
-    return `Property '${newKey}' was removed`;
+  switch (currentKey[0]) {
+    case '+':
+      return `Property '${newKey}' was added with value: ${defineComplexValue(value)}`;
+    case '-':
+      return `Property '${newKey}' was removed`;
+    default:
+      return '';
   }
-  if (currentKey.startsWith('+')) {
-    return `Property '${newKey}' was added with value: ${_.isObject(value) ? '[complex value]' : makeQuotes(value)}`;
+};
+
+const genPlainDiff = (entries, newKey, nextEntries, previousKey) => {
+  const [currentKey, currentValue] = entries;
+  const [nextKey, nextValue] = nextEntries;
+  if (`+ ${currentKey.slice(2)}` === nextKey) {
+    return `Property '${newKey}' was updated. From ${defineComplexValue(currentValue)} to ${makeQuotes(nextValue)}`;
+  }
+  if (`- ${currentKey.slice(2)}` !== previousKey) {
+    return getStringOfPlainFormatter(currentKey, currentValue, newKey);
   }
 };
 
@@ -26,18 +41,12 @@ const makePlain = (obj) => {
       const newKey = `${acc}${acc === '' ? '' : '.'}${key.slice(2)}`;
       const [nextKey, nextValue] = arr[i + 1] === undefined ? '' : arr[i + 1];
       const [previousKey] = arr[i - 1] === undefined ? '' : arr[i - 1];
-      if (`+ ${key.slice(2)}` === nextKey) {
-        return `Property '${newKey}' was updated. From ${_.isObject(value) ? '[complex value]' : makeQuotes(value)} to ${makeQuotes(nextValue)}`;
-      }
-      if (`- ${key.slice(2)}` !== previousKey) {
-        console.log(acc);
-        return getStringOfPlainFormatter(key, value, newKey);
-      }
+      return genPlainDiff([key, value], newKey, [nextKey, nextValue], previousKey);
     });
 
     return _.compact(plain).join('\n');
   };
-
+  console.log(iter(obj, 1));
   return iter(obj, '');
 };
 
