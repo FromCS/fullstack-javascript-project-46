@@ -11,7 +11,7 @@ const chooseFormatters = (formatter) => {
       return makePlain;
 
     default:
-      throw new Error('Unexpected format name! Please, check yourself.');
+      throw new Error("Unexpected format's name! Please, check yourself.");
   }
 };
 
