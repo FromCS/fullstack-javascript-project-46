@@ -17,21 +17,20 @@ const makeDiff = (key, values, data, acc) => {
   const [data1, data2] = data;
   if (!_.has(data1, key)) {
     acc[`+ ${key}`] = value2;
+    return acc;
   }
 
   if (!_.has(data2, key)) {
     acc[`- ${key}`] = value1;
+    return acc;
   }
 
-  if (_.has(data1, key) && _.has(data2, key)) {
-    if (value1 === value2) {
-      acc[key] = value2;
-    }
-    if (value1 !== value2) { // условие неверное, нужен рефакторинг
-      acc[`- ${key}`] = value1;
-      acc[`+ ${key}`] = value2;
-    }
+  if (value1 === value2) {
+    acc[key] = value2;
+    return acc;
   }
+  acc[`- ${key}`] = value1;
+  acc[`+ ${key}`] = value2;
   return acc;
 };
 
