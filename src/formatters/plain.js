@@ -45,7 +45,6 @@ const makePlain = (obj) => {
 
     return _.compact(plain).join('\n');
   };
-  console.log(iter(obj, 1));
   return iter(obj, '');
 };
 
