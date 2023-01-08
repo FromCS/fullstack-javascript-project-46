@@ -13,7 +13,7 @@ const chooseFormatters = (formatter) => {
 
     case 'json':
       return makeJson;
-    
+
     default:
       throw new Error("Unexpected format's name! Please, check yourself.");
   }
