@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 const isChanged = (key) => key.startsWith('+') || key.startsWith('-');
 
-const makeQuotes = (value) => ((typeof value === 'boolean' || value === null) ? value : `'${value}'`);
+const makeQuotes = (value) => (typeof value === 'string' ? `'${value}'` : value);
 
 const defineComplexValue = (value) => (_.isObject(value) ? '[complex value]' : makeQuotes(value));
 
@@ -23,7 +23,7 @@ const comparePropertyInBothData = (entries, newKey, nextEntries, previousKey) =>
   const [currentKey, currentValue] = entries;
   const [nextKey, nextValue] = nextEntries;
   if (`+ ${currentKey.slice(2)}` === nextKey) {
-    return `Property '${newKey}' was updated. From ${defineComplexValue(currentValue)} to ${makeQuotes(nextValue)}`;
+    return `Property '${newKey}' was updated. From ${defineComplexValue(currentValue)} to ${defineComplexValue(nextValue)}`;
   }
   if (`- ${currentKey.slice(2)}` !== previousKey) {
     return comparePropertyInOneData(currentKey, currentValue, newKey);
