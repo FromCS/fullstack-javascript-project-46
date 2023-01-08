@@ -28,6 +28,7 @@ const comparePropertyInBothData = (entries, newKey, nextEntries, previousKey) =>
   if (`- ${currentKey.slice(2)}` !== previousKey) {
     return comparePropertyInOneData(currentKey, currentValue, newKey);
   }
+  return '';
 };
 
 const makePlain = (obj) => {
@@ -38,8 +39,8 @@ const makePlain = (obj) => {
         return iter(value, `${acc}${definePointInComplexProperty(acc)}${key}`);
       }
       const newKey = `${acc}${definePointInComplexProperty(acc)}${key.slice(2)}`;
-      const [nextKey, nextValue] = arr[i + 1] === undefined ? '' : arr[i + 1];
-      const [previousKey] = arr[i - 1] === undefined ? '' : arr[i - 1];
+      const [nextKey, nextValue] = arr[i + 1] || '';
+      const [previousKey] = arr[i - 1] || '';
       return comparePropertyInBothData([key, value], newKey, [nextKey, nextValue], previousKey);
     });
 
