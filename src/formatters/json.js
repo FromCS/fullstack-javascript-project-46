@@ -4,7 +4,7 @@ const makeDoubleQuotes = (value) => ((typeof value === 'string')
   ? `"${value}"`
   : value);
 
-const makeJson = (obj) => {
+const makeJson = (diffs) => {
   const iter = (currentValue) => {
     const json = currentValue.map(([key, value]) => (_.isObject(value)
       ? [`"${key}":${iter(value)}`]
@@ -13,7 +13,7 @@ const makeJson = (obj) => {
     return `[{${json.join(',')}}]`;
   };
 
-  return iter(obj);
+  return iter(diffs);
 };
 
 export default makeJson;

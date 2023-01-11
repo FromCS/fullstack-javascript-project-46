@@ -31,7 +31,7 @@ const comparePropertyInBothData = (entries, newKey, nextEntries, previousKey) =>
   return '';
 };
 
-const makePlain = (obj) => {
+const makePlain = (diffs) => {
   const iter = (currentValue, acc) => {
     const plain = currentValue.map(([key, value], i, arr) => {
       if (!isChanged(key) && _.isObject(value)) {
@@ -45,7 +45,7 @@ const makePlain = (obj) => {
 
     return _.compact(plain).join('\n');
   };
-  return iter(obj, '');
+  return iter(diffs, '');
 };
 
 export default makePlain;

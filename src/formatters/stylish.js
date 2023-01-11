@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const makeStylish = (obj, replacer = ' ', spaceCount = 4) => {
+const makeStylish = (diffs, replacer = ' ', spaceCount = 4) => {
   const iter = (currentValue, depth) => {
     if (!Array.isArray(currentValue)) {
       return `${currentValue}`;
@@ -16,7 +16,7 @@ const makeStylish = (obj, replacer = ' ', spaceCount = 4) => {
     return `{\n${result.join('\n')}\n${bracketIndent}}`;
   };
 
-  return iter(obj, 1);
+  return iter(diffs, 1);
 };
 
 export default makeStylish;
