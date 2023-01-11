@@ -2,12 +2,11 @@ import _ from 'lodash';
 
 const makeStylish = (obj, replacer = ' ', spaceCount = 4) => {
   const iter = (currentValue, depth) => {
-    if (!_.isObject(currentValue)) {
+    if (!Array.isArray(currentValue)) {
       return `${currentValue}`;
     }
-    const entries = Object.entries(currentValue);
     const newSpaceCount = spaceCount * depth;
-    const result = entries.map(([key, value]) => {
+    const result = currentValue.map(([key, value]) => {
       const indent = key.startsWith('+') || key.startsWith('-')
         ? replacer.repeat(newSpaceCount - 2)
         : replacer.repeat(newSpaceCount);

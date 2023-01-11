@@ -4,7 +4,7 @@ const isChanged = (key) => key.startsWith('+') || key.startsWith('-');
 
 const makeQuotes = (value) => (typeof value === 'string' ? `'${value}'` : value);
 
-const defineComplexValue = (value) => (_.isObject(value) ? '[complex value]' : makeQuotes(value));
+const defineComplexValue = (value) => (Array.isArray(value) ? '[complex value]' : makeQuotes(value));
 
 const comparePropertyInOneData = (currentKey, value, newKey) => {
   switch (currentKey[0]) {
@@ -33,8 +33,7 @@ const comparePropertyInBothData = (entries, newKey, nextEntries, previousKey) =>
 
 const makePlain = (obj) => {
   const iter = (currentValue, acc) => {
-    const entries = Object.entries(currentValue);
-    const plain = entries.map(([key, value], i, arr) => {
+    const plain = currentValue.map(([key, value], i, arr) => {
       if (!isChanged(key) && _.isObject(value)) {
         return iter(value, `${acc}${definePointInComplexProperty(acc)}${key}`);
       }
