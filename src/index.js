@@ -1,37 +1,38 @@
 import _ from 'lodash';
 import path from 'path';
 import readFile from './parsers.js';
-import chooseFormatters from './formatters/index.js';
+import stringify from './formatters/index.js';
 
-const stringify = (obj, formatter = 'stylish') => {
-  const makeFormatter = chooseFormatters(formatter);
-  return makeFormatter(obj);
+const getArrFromObj = (obj) => {
+  if (_.isObject(obj)) {
+    const entries = Object.entries(obj);
+    const array = entries.map(([key, value]) => (_.isObject(value)
+      ? [key, getArrFromObj(value)]
+      : [key, value]));
+    return array;
+  }
+  return obj;
 };
 
 const getExtension = (filepath) => path.extname(filepath);
 
 const getSortedKeysByName = (data1, data2) => _.sortBy(Object.keys({ ...data1, ...data2 }));
 
-const makeDiff = (key, values, data, acc) => {
+const makeDiff = (key, values, data) => {
   const [value1, value2] = values;
   const [data1, data2] = data;
   if (!_.has(data1, key)) {
-    acc[`+ ${key}`] = value2;
-    return acc;
+    return [[`+ ${key}`, getArrFromObj(value2)]];
   }
 
   if (!_.has(data2, key)) {
-    acc[`- ${key}`] = value1;
-    return acc;
+    return [[`- ${key}`, getArrFromObj(value1)]];
   }
 
   if (value1 === value2) {
-    acc[key] = value2;
-    return acc;
+    return [[key, getArrFromObj(value1)]];
   }
-  acc[`- ${key}`] = value1;
-  acc[`+ ${key}`] = value2;
-  return acc;
+  return [[`- ${key}`, getArrFromObj(value1)], [`+ ${key}`, getArrFromObj(value2)]];
 };
 
 const genDiff = (filepath1, filepath2, formatter = 'stylish') => {
