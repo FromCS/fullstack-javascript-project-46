@@ -39,16 +39,15 @@ const genDiff = (filepath1, filepath2, formatter = 'stylish') => {
   const data2 = readFile(filepath2, getExtension(filepath2));
   const iter = (currentData1, currentData2) => {
     const sortedGeneralKeys = getSortedKeysByName(currentData1, currentData2);
-    const difference = sortedGeneralKeys.reduce((acc, key) => {
+    const difference = sortedGeneralKeys.map((key) => {
       const value1 = currentData1[key];
       const value2 = currentData2[key];
       if (_.isObject(value1) && _.isObject(value2)) {
-        acc[key] = iter(value1, value2);
-        return acc;
+        return [[key, iter(value1, value2)]];
       }
-      return makeDiff(key, [value1, value2], [currentData1, currentData2], acc);
-    }, {});
-    return difference;
+      return makeDiff(key, [value1, value2], [currentData1, currentData2]);
+    });
+    return _.flatten(difference);
   };
 
   console.log(stringify(iter(data1, data2), formatter));
