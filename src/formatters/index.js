@@ -3,20 +3,20 @@ import makeStylish from './stylish.js';
 import makePlain from './plain.js';
 import makeJson from './json.js';
 
-const chooseFormatters = (formatter) => {
+const stringify = (obj, formatter) => {
   switch (formatter) {
     case 'stylish':
-      return makeStylish;
+      return makeStylish(obj);
 
     case 'plain':
-      return makePlain;
+      return makePlain(obj);
 
     case 'json':
-      return makeJson;
+      return makeJson(obj);
 
     default:
       throw new Error("Unexpected format's name! Please, check yourself.");
   }
 };
 
-export default chooseFormatters;
+export default stringify;
