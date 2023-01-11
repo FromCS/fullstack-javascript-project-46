@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 const makeStylish = (diffs, replacer = ' ', spaceCount = 4) => {
   const iter = (currentValue, depth) => {
     if (!Array.isArray(currentValue)) {
