@@ -3,6 +3,7 @@
 
 ## Installation
 ```bash
+git clone git@github.com:FromCS/fullstack-javascript-project-46.git
 make install
 ```  
 ## Requirements
