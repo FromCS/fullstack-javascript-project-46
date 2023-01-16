@@ -1,16 +1,19 @@
-import path from 'path';
-import { readFileSync } from 'fs';
 import yaml from 'js-yaml';
 
-const getAbsolutePath = (filepath) => path.resolve(process.cwd(), filepath);
+const getParsedContent = (data, extension) => {
+  switch (extension) {
+    case '.yml':
+      return yaml.load(data);
 
-const readFile = (filepath, extension) => {
-  const absolutePath = getAbsolutePath(filepath);
-  if (extension === '.yml' || extension === '.yaml') {
-    return yaml.load(readFileSync(filepath));
+    case '.yaml':
+      return yaml.load(data);
+
+    case '.json':
+      return JSON.parse(data);
+
+    default:
+      throw new Error(`Extension ${extension} - doesn't supported`);
   }
-
-  return JSON.parse(readFileSync(absolutePath));
 };
 
-export default readFile;
+export default getParsedContent;
