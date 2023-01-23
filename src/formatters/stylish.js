@@ -3,18 +3,22 @@ import {
   getStatus, getKey, getValue, getOldValue, getNewValue, getChildren,
 } from '../utils.js';
 
-const getString = (obj, replacer, spaceCount, depth) => {
+const primeReplacer = ' ';
+
+const primeSpaceCount = 4;
+
+const makeStylishRaw = (obj, depth, replacer = primeReplacer, spaceCount = primeSpaceCount) => {
   if (!_.isObject(obj)) {
     return obj;
   }
   const entries = Object.entries(obj);
   const indent = replacer.repeat(spaceCount * depth - 2);
-  const result = entries.map(([key, value]) => `${indent}  ${key}: ${getString(value, replacer, spaceCount, depth + 1)}`);
+  const result = entries.map(([key, value]) => `${indent}  ${key}: ${makeStylishRaw(value, depth + 1)}`);
   const bracketIndent = replacer.repeat(spaceCount * depth - spaceCount);
   return `{\n${result.join('\n')}\n${bracketIndent}}`;
 };
 
-const makeStylish = (diffs, replacer = ' ', spaceCount = 4) => {
+const makeStylish = (diffs, replacer = primeReplacer, spaceCount = primeSpaceCount) => {
   const iter = (currentValue, depth) => {
     const newSpaceCount = spaceCount * depth;
     const indent = replacer.repeat(newSpaceCount - 2);
@@ -23,14 +27,14 @@ const makeStylish = (diffs, replacer = ' ', spaceCount = 4) => {
         case 'nested':
           return `${indent}  ${getKey(node)}: ${iter(getChildren(node), depth + 1)}`;
         case 'added':
-          return `${indent}+ ${getKey(node)}: ${getString(getValue(node), replacer, spaceCount, depth + 1)}`;
+          return `${indent}+ ${getKey(node)}: ${makeStylishRaw(getValue(node), depth + 1)}`;
         case 'changed':
-          return [`${indent}- ${getKey(node)}: ${getString(getOldValue(node), replacer, spaceCount, depth + 1)}`,
-            `${indent}+ ${getKey(node)}: ${getString(getNewValue(node), replacer, spaceCount, depth + 1)}`].join('\n');
+          return [`${indent}- ${getKey(node)}: ${makeStylishRaw(getOldValue(node), depth + 1)}`,
+            `${indent}+ ${getKey(node)}: ${makeStylishRaw(getNewValue(node), depth + 1)}`].join('\n');
         case 'deleted':
-          return `${indent}- ${getKey(node)}: ${getString(getValue(node), replacer, spaceCount, depth + 1)}`;
+          return `${indent}- ${getKey(node)}: ${makeStylishRaw(getValue(node), depth + 1)}`;
         default:
-          return `${indent}  ${getKey(node)}: ${getString(getValue(node), replacer, spaceCount, depth + 1)}`;
+          return `${indent}  ${getKey(node)}: ${makeStylishRaw(getValue(node), depth + 1)}`;
       }
     });
     const bracketIndent = replacer.repeat(newSpaceCount - spaceCount);
