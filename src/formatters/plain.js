@@ -1,46 +1,30 @@
 import _ from 'lodash';
-
-const isChanged = (key) => key.startsWith('+') || key.startsWith('-');
+import {
+  getChildren,
+  getKey, getNewValue, getOldValue, getStatus, getValue,
+} from '../utils';
 
 const makeQuotes = (value) => (typeof value === 'string' ? `'${value}'` : value);
 
-const defineComplexValue = (value) => (Array.isArray(value) ? '[complex value]' : makeQuotes(value));
+const defineComplexValue = (value) => (_.isObject(value) ? '[complex value]' : makeQuotes(value));
 
-const comparePropertyInOneData = (currentKey, value, newKey) => {
-  switch (currentKey[0]) {
-    case '+':
-      return `Property '${newKey}' was added with value: ${defineComplexValue(value)}`;
-    case '-':
-      return `Property '${newKey}' was removed`;
-    default:
-      return '';
-  }
-};
-
-const definePointInComplexProperty = ((value) => (value === '' ? '' : '.'));
-
-const comparePropertyInBothData = (entries, newKey, nextEntries, previousKey) => {
-  const [currentKey, currentValue] = entries;
-  const [nextKey, nextValue] = nextEntries;
-  if (`+ ${currentKey.slice(2)}` === nextKey) {
-    return `Property '${newKey}' was updated. From ${defineComplexValue(currentValue)} to ${defineComplexValue(nextValue)}`;
-  }
-  if (`- ${currentKey.slice(2)}` !== previousKey) {
-    return comparePropertyInOneData(currentKey, currentValue, newKey);
-  }
-  return '';
-};
+const definePoint = ((value) => (value === '' ? '' : '.'));
 
 const makePlain = (diffs) => {
   const iter = (currentValue, acc) => {
-    const plain = currentValue.map(([key, value], i, arr) => {
-      if (!isChanged(key) && _.isObject(value)) {
-        return iter(value, `${acc}${definePointInComplexProperty(acc)}${key}`);
+    const plain = currentValue.map((node) => {
+      switch (getStatus(node)) {
+        case 'nested':
+          return iter(getChildren(node), `${acc}${definePoint(acc)}${getKey(node)}`);
+        case 'added':
+          return `Property '${acc}${definePoint(acc)}${getKey(node)}' was ${getStatus(node)} with value: ${defineComplexValue(getValue(node))}`;
+        case 'deleted':
+          return `Property '${acc}${definePoint(acc)}${getKey(node)}' was removed`;
+        case 'changed':
+          return `Property '${acc}${definePoint(acc)}${getKey(node)}' was updated. From ${defineComplexValue(getOldValue(node))} to ${defineComplexValue(getNewValue(node))}`;
+        default:
+          return '';
       }
-      const newKey = `${acc}${definePointInComplexProperty(acc)}${key.slice(2)}`;
-      const [nextKey, nextValue] = arr[i + 1] || '';
-      const [previousKey] = arr[i - 1] || '';
-      return comparePropertyInBothData([key, value], newKey, [nextKey, nextValue], previousKey);
     });
 
     return _.compact(plain).join('\n');
