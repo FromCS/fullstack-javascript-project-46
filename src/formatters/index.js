@@ -1,4 +1,3 @@
-// реализовать выбор форматтера с зависимости от значения параметра функции
 import makeStylish from './stylish.js';
 import makePlain from './plain.js';
 import makeJson from './json.js';
