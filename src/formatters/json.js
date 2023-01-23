@@ -7,28 +7,29 @@ const makeDoubleQuotes = (value) => ((typeof value === 'string')
   ? `"${value}"`
   : value);
 
+const makeJsonRaw = (rawValue) => {
+  if (!_.isObject(rawValue)) {
+    return `${makeDoubleQuotes(rawValue)}`;
+  }
+  const entries = Object.entries(rawValue);
+  const json = entries.map(([key, value]) => [[`"${key}":${makeJsonRaw(value)}`]]);
+  return `[{${_.flatten(json).join(',')}}]`;
+};
+
 const makeJson = (diffs) => {
-  if (!_.isObject(diffs)) {
-    return `${makeDoubleQuotes(diffs)}`;
-  }
-  if (!Array.isArray(diffs)) {
-    const entries = Object.entries(diffs);
-    const result = entries.map(([key, value]) => [[`"${key}":${makeJson(value)}`]]);
-    return `[{${_.flatten(result).join(',')}}]`;
-  }
   const json = diffs.map((node) => {
     switch (getStatus(node)) {
       case 'nested':
         return [[`"${getKey(node)}":${makeJson(getChildren(node))}`]];
       case 'added':
-        return [[`"+ ${getKey(node)}":${makeJson(getValue(node))}`]];
+        return [[`"+ ${getKey(node)}":${makeJsonRaw(getValue(node))}`]];
       case 'deleted':
-        return [[`"- ${getKey(node)}":${makeJson(getValue(node))}`]];
+        return [[`"- ${getKey(node)}":${makeJsonRaw(getValue(node))}`]];
       case 'changed':
-        return [[`"- ${getKey(node)}":${makeJson(getOldValue(node))}`],
-          [`"+ ${getKey(node)}":${makeJson(getNewValue(node))}`]];
+        return [[`"- ${getKey(node)}":${makeJsonRaw(getOldValue(node))}`],
+          [`"+ ${getKey(node)}":${makeJsonRaw(getNewValue(node))}`]];
       default:
-        return [[`"${getKey(node)}":${makeJson(getValue(node))}`]];
+        return [[`"${getKey(node)}":${makeJsonRaw(getValue(node))}`]];
     }
   });
   return `[{${_.flatten(json).join(',')}}]`;
