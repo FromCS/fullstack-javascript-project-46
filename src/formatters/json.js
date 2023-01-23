@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {
   getStatus, getKey, getValue, getOldValue, getNewValue, getChildren,
-} from '../utils';
+} from '../utils.js';
 
 const makeDoubleQuotes = (value) => ((typeof value === 'string')
   ? `"${value}"`
