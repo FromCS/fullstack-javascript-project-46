@@ -2,7 +2,7 @@ import makeStylish from './stylish.js';
 import makePlain from './plain.js';
 import makeJson from './json.js';
 
-const stringify = (diffs, formatter) => {
+const getFormattedContent = (diffs, formatter) => {
   switch (formatter) {
     case 'stylish':
       return makeStylish(diffs);
@@ -18,4 +18,4 @@ const stringify = (diffs, formatter) => {
   }
 };
 
-export default stringify;
+export default getFormattedContent;
