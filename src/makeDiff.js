@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 const makeDiff = (data1, data2) => {
-  const sortedKeysByName = _.sortBy(_.union(Object.keys({ ...data1, ...data2 })));
+  const sortedKeysByName = _.sortBy(Object.keys({ ...data1, ...data2 }));
   const treeOfDiff = sortedKeysByName.map((key) => {
     const value1 = data1[key];
     const value2 = data2[key];
